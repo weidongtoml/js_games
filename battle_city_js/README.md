@@ -16,5 +16,7 @@ Step 4: display any moving tank
 
 Step 5: getting other artifacts shown
 - getting the gems
+- getting the landmarks
+- refactor
 
 Step 6: create the map editor
