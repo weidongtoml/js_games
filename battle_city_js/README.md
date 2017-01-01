@@ -20,3 +20,4 @@ Step 5: getting other artifacts shown
 - refactor
 
 Step 6: create the map editor
+- able to render map as user edit
