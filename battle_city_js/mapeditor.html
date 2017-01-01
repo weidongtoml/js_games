@@ -32,7 +32,23 @@
         y: 12
       };
 
-      var RESTRICTED_POS = [INIT_BASE_POS, INIT_TANK_POS];
+      var INIT_ENEMY_POS_0 = {
+        x: 0,
+        y: 0
+      };
+
+      var INIT_ENEMY_POS_1 = {
+        x: 6,
+        y: 0
+      };
+
+      var INIT_ENEMY_POS_2 = {
+        x: 12,
+        y: 0
+      };
+
+
+      var RESTRICTED_POS = [INIT_BASE_POS, INIT_TANK_POS, INIT_ENEMY_POS_0, INIT_ENEMY_POS_1, INIT_ENEMY_POS_2];
 
 
       var isEditRestricted = function(pos) {
@@ -120,20 +136,50 @@
         var DOM_VK_UP = 38;
         var DOM_VK_RIGHT = 39;
         var DOM_VK_DOWN = 40;
+
         var DOM_VK_A = 65;
+        var DOM_VK_B = 66;
+        var DOM_VK_C = 67;
+        var DOM_VK_W = 87;
+        var DOM_VK_F = 70;
+        var DOM_VK_I = 73;
+        var DOM_VK_G = 71;
+
 
         var deltaX = 0;
         var deltaY = 0;
 
-        if (key == DOM_VK_A) {  // TODO: probably use different key code to select landmark
-          console.log('a');
-          if (!isEditRestricted(tankLoc)) {
-            var nodeId = 'entry_' + tankLoc.y + '_' + tankLoc.x;
+        console.log(key);
+
+        var KEY_TO_LANDMARK = {};
+        KEY_TO_LANDMARK[DOM_VK_B] = LANDMARK_BRICK;
+        KEY_TO_LANDMARK[DOM_VK_W] = LANDMARK_WATER;
+        KEY_TO_LANDMARK[DOM_VK_I] = LANDMARK_IRON;
+        KEY_TO_LANDMARK[DOM_VK_G] = LANDMARK_GRASS;
+        KEY_TO_LANDMARK[DOM_VK_F] = LANDMARK_ICE;
+
+        if ([DOM_VK_A, DOM_VK_B, DOM_VK_W, DOM_VK_I, DOM_VK_G, DOM_VK_F, DOM_VK_C].find(function(x){return x == key;})) {  // TODO: probably use different key code to select landmark
+          console.log(key + '->' + KEY_TO_LANDMARK[key]);
+
+          var nodeId = 'entry_' + tankLoc.y + '_' + tankLoc.x;
+          if (!isEditRestricted(tankLoc) && key != DOM_VK_A) {
+            var landmarkType = KEY_TO_LANDMARK[key];
+            console.log(landmarkType);
             curLandMarkIndex++;
             curLandMarkIndex = (curLandMarkIndex + ALL_LANDMARKS_EXCEPT_BASE.length) % ALL_LANDMARKS_EXCEPT_BASE.length;
-            var landmark = createLandMark(nodeId, ALL_LANDMARKS_EXCEPT_BASE[curLandMarkIndex]);
+            var landmark = createLandMark(nodeId, landmarkType);
             landmark.init();
           }
+          if (key == DOM_VK_C) {
+            // TODO: implement clear function.
+            console.log('clear');
+            var nodeElement = document.getElementById(nodeId);
+
+            nodeElement.style = {};
+            nodeElement.style.backgroundImage = "";
+            nodeElement.className = 'map_entry';
+          }
+
         } else {
           curLandMarkIndex = -1;
           if (key == DOM_VK_LEFT) {
