@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .tank.yellow.up0 {
+        width: 16px;
+        height: 16px;
+        background: url('NES-BattleCity-Generate.png') 0 0;
+      }
+      .tank.yellow.up1 {
+        width: 16px;
+        height: 16px;
+        background: url('NES-BattleCity-Generate.png') -16px 0;
+      }
+      .tank.yellow.left0 {
+        width: 16px;
+        height: 16px;
+        background: url('NES-BattleCity-Generate.png') -32px 0;
+      }
+      .tank.yellow.left1 {
+        width: 16px;
+        height: 16px;
+        background: url('NES-BattleCity-Generate.png') -48px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id='tank0'></div>
+    <div id='tank1'></div>
+    <script>
+      var createTank = function(domId, color, direction) {
+        var domObj = document.getElementById(domId, color);
+        var state = {
+          type: 'tank',
+          color: color,
+          direction: direction,
+          curStep: 0,
+          stepSize: 2,
+          domObj: domObj
+        };
+
+        var render = function() {
+
+        };
+
+        var update = function() {
+          state.curStep = (state.curStep + 1) % state.stepSize;
+          domObj.className = state.type + ' ' + state.color + ' ' + state.direction + state.curStep;
+//           console.log(domObj.className);
+        };
+
+        return {
+          update: update
+        }
+      };
+
+      var tank0 = createTank('tank0', 'yellow', 'up');
+      var tank1 = createTank('tank1', 'yellow', 'left');
+
+      setInterval(function(){
+        tank0.update();
+        tank1.update();
+      }, 500);
+    </script>
+  </body>
+</html>
