@@ -2,10 +2,7 @@
 <html>
   <head>
     <style>
-      #tanks {
-        float: left;
-      }
-      #gems {
+      #tanks, #gems, #landmarks {
         float: left;
       }
     </style>
@@ -19,8 +16,10 @@
         <div id='tank3'></div>
       </div>
       <div id="gems"></div>
+      <div id="landmarks"></div>
     </div>
     <script>
+      // TANKS
       var DIRECTION_UP = 'up';
       var DIRECTION_LEFT = 'left';
       var DIRECTION_DOWN = 'down';
@@ -34,6 +33,7 @@
       var TANK_COLOR_SILVER = 'silver';
       var TANK_COLOR_RED = 'red';
 
+      // GEMS
       var GEM_HELMET = 'helmet';
       var GEM_CLOCK = 'clock';
       var GEM_SHOVEL = 'shovel';
@@ -42,8 +42,19 @@
       var GEM_TANK = 'tank';
       var GEM_GUN = 'gun';
 
-      var ALL_GEMS = [GEM_HELMET, GEM_CLOCK, GEM_SHOVEL, GEM_STAR, GEM_GRENADE, GEM_TANK, GEM_GUN];
+      var ALL_GEMS = [GEM_HELMET, GEM_CLOCK, GEM_SHOVEL, GEM_STAR,
+                      GEM_GRENADE, GEM_TANK, GEM_GUN];
 
+      // LANDMARKS
+      var LANDMARK_BRICK = 'brick';
+      var LANDMARK_IRON = 'iron';
+      var LANDMARK_WATER = 'water';
+      var LANDMARK_GRASS = 'grass';
+      var LANDMARK_ICE = 'ice';
+      var LANDMARK_BASE = 'base';
+
+      var ALL_LANDMARKS = [LANDMARK_BRICK, LANDMARK_IRON, LANDMARK_WATER,
+                           LANDMARK_GRASS, LANDMARK_ICE, LANDMARK_BASE];
 
       // sprite parameters
       var SPRITE_URL = 'NES-BattleCity-Generate.png';
@@ -91,6 +102,24 @@
       GEM_TO_H_OFFSET[GEM_GRENADE] = 4;
       GEM_TO_H_OFFSET[GEM_TANK] = 5;
       GEM_TO_H_OFFSET[GEM_GUN] = 6;
+
+      // various parameters for locating the land marks
+      LANDMARK_INIT_H_OFFSET = 16 * 8 * 2;
+      LANDMARK_TO_H_OFFSET = {};
+      LANDMARK_TO_H_OFFSET[LANDMARK_BRICK] = LANDMARK_INIT_H_OFFSET;
+      LANDMARK_TO_H_OFFSET[LANDMARK_IRON] = LANDMARK_INIT_H_OFFSET;
+      LANDMARK_TO_H_OFFSET[LANDMARK_WATER] = LANDMARK_INIT_H_OFFSET;
+      LANDMARK_TO_H_OFFSET[LANDMARK_GRASS] = LANDMARK_INIT_H_OFFSET + 16;
+      LANDMARK_TO_H_OFFSET[LANDMARK_ICE] = LANDMARK_INIT_H_OFFSET + 16 * 2;
+      LANDMARK_TO_H_OFFSET[LANDMARK_BASE] = LANDMARK_INIT_H_OFFSET + 16 * 3;
+
+      LANDMARK_TO_V_OFFSET = {};
+      LANDMARK_TO_V_OFFSET[LANDMARK_BRICK] = 0;
+      LANDMARK_TO_V_OFFSET[LANDMARK_IRON] = 16;
+      LANDMARK_TO_V_OFFSET[LANDMARK_WATER] = 16 * 2;
+      LANDMARK_TO_V_OFFSET[LANDMARK_GRASS] = 16 * 2;
+      LANDMARK_TO_V_OFFSET[LANDMARK_ICE] = 16 * 2;
+      LANDMARK_TO_V_OFFSET[LANDMARK_BASE] = 16 * 2;
 
 
       var setBasicSpriteStyle = function(domObj) {
@@ -167,6 +196,24 @@
         };
       };
 
+      // creates a landmark
+      var createLandMark = function(domId, landmarkType) {
+        var domObj = document.getElementById(domId);
+        setBasicSpriteStyle(domObj);
+
+        var init = function() {
+          var horizontalOffset = LANDMARK_TO_H_OFFSET[landmarkType];
+          var verticalOffset = LANDMARK_TO_V_OFFSET[landmarkType]
+          console.log('landmark offsets:' + horizontalOffset + ',' + verticalOffset);
+          setSpriteSrcOffsets(domObj, horizontalOffset, verticalOffset);
+        };
+
+        return {
+          init: init,
+          update: function() {}
+        };
+      };
+
 
       var showTanks = function() {
 
@@ -206,8 +253,25 @@
         }
       };
 
+      var showLandMarks = function() {
+        var gemDom = document.getElementById('landmarks');
+        var i;
+        var node;
+        var nodeId;
+        var curGem;
+        for (i = 0; i < ALL_LANDMARKS.length; ++i) {
+          nodeId = 'landmark_' + ALL_LANDMARKS[i];
+          node = document.createElement('div');
+          node.id = nodeId;
+          gemDom.appendChild(node);
+          curGem = createLandMark(nodeId, ALL_LANDMARKS[i]);
+          curGem.init();
+        }
+      };
+
       showTanks();
       showGems();
+      showLandMarks();
     </script>
   </body>
 </html>
