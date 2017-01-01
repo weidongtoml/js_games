@@ -5,12 +5,14 @@
       .tank.yellow.up0 {
         width: 16px;
         height: 16px;
-        background: url('NES-BattleCity-Generate.png') 0 0;
+        background-image: url('NES-BattleCity-Generate.png');
+        background-position: 0 0;
       }
       .tank.yellow.up1 {
         width: 16px;
         height: 16px;
-        background: url('NES-BattleCity-Generate.png') -16px 0;
+        background-image: url('NES-BattleCity-Generate.png');
+        background-position: -16px 0;
       }
       .tank.yellow.left0 {
         width: 16px;
@@ -27,26 +29,89 @@
   <body>
     <div id='tank0'></div>
     <div id='tank1'></div>
+    <div id='tank2'></div>
+    <div id='tank3'></div>
     <script>
-      var createTank = function(domId, color, direction) {
+      var DIRECTION_UP = 'up';
+      var DIRECTION_LEFT = 'left';
+      var DIRECTION_DOWN = 'down';
+      var DIRECTION_RIGHT = 'right';
+
+      var TANK_TYPE_SLOW = 'slow';
+      var TANK_TYPE_FAST = 'fast';
+
+      var TANK_COLOR_GOLD = 'gold';
+      var TANK_COLOR_GREEN = 'green';
+      var TANK_COLOR_SILVER = 'silver';
+      var TANK_COLOR_RED = 'red';
+
+      var createTank = function(domId, tankType, tankLevel, color, direction) {
         var domObj = document.getElementById(domId, color);
+
         var state = {
           type: 'tank',
-          color: color,
+          tankColor: color,
           direction: direction,
           curStep: 0,
           stepSize: 2,
+          tankType: tankType,
+          tankLevel: tankLevel,
           domObj: domObj
         };
 
         var render = function() {
+          var SPRITE_URL = 'NES-BattleCity-Generate.png';
+          var SPRITE_WIDTH = 16;
+          var SPRITE_HEIGHT = 16;
 
+          // various parameters needed to extract the correct tank image from the sprite.
+          var STEP_OFFSET_SIZE = 16;
+
+          var DIRECTION_OFFSET_SIZE = 16 * 2;
+          var DIRECTION_TO_H_OFFSET = {};
+          DIRECTION_TO_H_OFFSET[DIRECTION_UP] = 0;
+          DIRECTION_TO_H_OFFSET[DIRECTION_LEFT] = 1;
+          DIRECTION_TO_H_OFFSET[DIRECTION_DOWN] = 2;
+          DIRECTION_TO_H_OFFSET[DIRECTION_RIGHT] = 3;
+
+          var TANK_TYPE_OFFSET_SIZE = 16 * 4;
+          var TANK_TYPE_TO_OFFSET = {};
+          TANK_TYPE_TO_OFFSET[TANK_TYPE_SLOW] = 0;
+          TANK_TYPE_TO_OFFSET[TANK_TYPE_FAST] = 1;
+
+          var TANK_COLOR_OFFSET_SIZE = 16 * 8;
+          var TANK_COLOR_TO_H_OFFSET = {};
+          TANK_COLOR_TO_H_OFFSET[TANK_COLOR_GOLD] = 0;
+          TANK_COLOR_TO_H_OFFSET[TANK_COLOR_GREEN] = 0;
+          TANK_COLOR_TO_H_OFFSET[TANK_COLOR_SILVER] = 1;
+          TANK_COLOR_TO_H_OFFSET[TANK_COLOR_RED] = 1;
+
+          var TANK_COLOR_TO_V_OFFSET = {};
+          TANK_COLOR_TO_V_OFFSET[TANK_COLOR_GOLD] = 0;
+          TANK_COLOR_TO_V_OFFSET[TANK_COLOR_GREEN] = 1;
+          TANK_COLOR_TO_V_OFFSET[TANK_COLOR_SILVER] = 0;
+          TANK_COLOR_TO_V_OFFSET[TANK_COLOR_RED] = 1;
+
+          var horizontalOffset = DIRECTION_TO_H_OFFSET[state.direction] * DIRECTION_OFFSET_SIZE +
+              TANK_COLOR_TO_H_OFFSET[state.tankColor] * TANK_COLOR_OFFSET_SIZE +
+              state.curStep * STEP_OFFSET_SIZE;
+
+          var verticalOffset = TANK_TYPE_TO_OFFSET[state.tankType] * 4 * 16 + state.tankLevel * 16 +
+              TANK_COLOR_TO_V_OFFSET[state.tankColor] * TANK_COLOR_OFFSET_SIZE;
+
+          console.log('horizontalOffset:' + horizontalOffset);
+          console.log('verticalOffset:' + verticalOffset);
+
+
+          domObj.style.backgroundImage = "url('" + SPRITE_URL + "')";
+          domObj.style.backgroundPosition = (-horizontalOffset) + 'px ' + (-verticalOffset) + 'px ';
+          domObj.style.width = SPRITE_WIDTH + 'px';
+          domObj.style.height = SPRITE_HEIGHT + 'px';
         };
 
         var update = function() {
           state.curStep = (state.curStep + 1) % state.stepSize;
-          domObj.className = state.type + ' ' + state.color + ' ' + state.direction + state.curStep;
-//           console.log(domObj.className);
+          render();
         };
 
         return {
@@ -54,13 +119,24 @@
         }
       };
 
-      var tank0 = createTank('tank0', 'yellow', 'up');
-      var tank1 = createTank('tank1', 'yellow', 'left');
+      var showTanks = function() {
 
-      setInterval(function(){
-        tank0.update();
-        tank1.update();
-      }, 500);
+        var tanks = [
+          createTank('tank0', TANK_TYPE_SLOW, 0, TANK_COLOR_GOLD, DIRECTION_UP),
+          createTank('tank1', TANK_TYPE_SLOW, 1, TANK_COLOR_GREEN, DIRECTION_LEFT),
+          createTank('tank2', TANK_TYPE_FAST, 2, TANK_COLOR_SILVER, DIRECTION_DOWN),
+          createTank('tank3', TANK_TYPE_FAST, 3, TANK_COLOR_RED, DIRECTION_RIGHT)
+        ];
+
+        setInterval(function(){
+          var i = 0;
+          for (i = 0; i < tanks.length; ++i) {
+            tanks[i].update();
+          }
+        }, 500);
+      }
+
+      showTanks();
     </script>
   </body>
 </html>
